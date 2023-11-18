@@ -1,0 +1,21 @@
+::EM U42 Ultimate q1::What's the answer to this multiple-choice question? {
+  ~wrong answer#feedback comment on the wrong answer
+  ~another wrong answer#feedback comment on this wrong answer
+  =right answer#Very good!
+}
+
+//From The Hitchhiker's Guide to the Galaxy
+::EM U42 Ultimate q2::Deep Thought said " {
+  =forty two#Correct according to The Hitchhiker's Guide to the Galaxy!
+  =42#Correct, as told to Loonquawl and Phouchg
+  =forty-two#Correct!
+}  is the Ultimate Answer to the Ultimate Question of Life, The Universe, and Everything."
+
+::EM U42 Ultimate q3::
+42 is the Absolute Answer to everything.{
+FALSE#42is the Ultimate Answer.#You gave the right answer.}
+
+::EM U42 Ultimate q4::When was Ulysses S. Grant born? {#
+   =1822:0
+   =%50%1822:2
+}

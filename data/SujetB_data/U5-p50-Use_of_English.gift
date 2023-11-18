@@ -1,0 +1,24 @@
+::U5 p50 0/4 Text::[html]<p><small><i>Read the text and fill in each gap with a single word. It can be an expression of quantity for some of the gaps.</i></small></p>
+<h5>Why do people love chilli?</h5>
+<p>People don't wash their eyes in lemon juice or pour boiling hot tea over themselves, so why are we prepared to go through so <i>much</i> pain for the sake of chilli?</p>
+<p>Chilli is not the only strange thing that people seem to enjoy. For example, very {1:SA:=few} people like the bitter taste of coffee to begin with but soon most of us {1:SA:=get~=become~=grow} used to it. But coffee contains caffeine, which has some addictive qualities, and this explains {1:SA:=why} it is so popular. But capsaicin, the ingredient which makes chillies hot, does not seem to have {1:SA:=any} addictive qualities whatsoever. {1:SA:=If~=if} we consumed a large quantity of it, it would kill us. And yet chillies have {1:SA:=been} used in cooking in almost {1:SA:=every} culture for thousands of years. Today, a third of the world's population eat chilli at least once a day. Lots of our favourite dishes just wouldn't taste right {1:SA:=without} it.</p>
+
+// Exercise 2: Multiple Choice
+
+::U5 p50 2.0 Text comprehension::Read the text above and choose the correct option.
+
+::U5 p50 2.1::The writer {~likes~=doesn’t} like chilli.
+
+::U5 p50 2.2::Chilli {~can be~=isn’t} very addictive.
+
+// Exercise 5: Short Answer
+
+::U5 p50 5.0 Expressions of quantity::Look at the expressions of quantity from the text. Find at least one other way to say the same thing as the underlined word.
+
+::U5 p50 5.1 very few::[html]<u>Very few people</u> {=not many people=hardly any people=only a few people=almost no-one}
+
+::U5 p50 5.2 not any::[html]<u>Does not seem to have any</u> addictive qualities {=has very few=has hardly any=has no}
+
+::U5 p50 5.3 a large quantity of::[html]<a>A large quantity of</u> {=a huge amount of=a great deal of=a lot of}
+
+::U5 p50 5.4 lots of::[html]<u>Lots</u> of our favourite dishes {=many=a large number}

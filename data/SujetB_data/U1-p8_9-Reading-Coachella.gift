@@ -1,0 +1,34 @@
+$CATEGORY: $course$/top/Gold B2, Unit 1
+
+// question: 25402465  name: U1 p8-9 Reading "Coachella" 6
+// See XML file
+
+// estion: 25402219  name: U1 p8-9 Reading "Coachella" 2 reading for gist
+::U1 p8-9 Reading "Coachella" 2 reading for gist::[html]<p><em>You are going to read a newspaper article about an American music festival, Coachella. Read the article quickly for gist and choose the phrase which best summarises each paragraph.</em></p>{
+	=<p>A. When the American 90s rock band Pearl Jam put on a concert in the dried-up, baking-hot Coachella Valley in California, it was an attempt to prove that they could break away from the monopoly of the concert giant TicketMaster, who, they believed, was using its considerable power to exploit music fans by continually increasing prices. Their concert was well attended and inspired the idea for a future, more ambitious event. Naturally, nobody could have predicted quite how important Coachella would eventually become.</p> -> 4. The original inspiration of Coachella
+	=<p>B. Six years later, in 1999, the same venue hosted its first weekend-long music festival. Although initially making a loss, this was blamed on the unbearably high temperatures and the lack of available campsite facilities. What's more, it took only a few more years until its quality line-ups, from small bands to headliners, were attracting worldwide attention.</p> -> 7. Overcoming problematic beginnings
+	=<p>C. If one band is responsible for confirming Coachella's arrival on the world stage, it is Daft Punk's iconic appearance there in 2006.  As a direct result of the festival's success, promoters expanded it to a three-day event, and in 2009, Coachella presented its most mainstream line-up, including Paul McCartney, the Killers, and The Cure. The following year Jay-Z became the first rap headliner and by 2012 such was the popularity of Coachella that it had developed into two weekends of three-day shows.</p> -> 2. Getting bigger and better
+	=<p>D. In an effort to attract America's impoverished younger generation to an expensive annual visit to the desert, the promoters made two clever decisions. One smart move was to get a much-missed band or singer such as Rage Against the Machine to reform every year. Most notable was a holographic representation of the late rapper 2Pac in 2012. ln a stroke of genius, they decided to cater for the section of the audience who adored the music that used to be labelled electronic and who flocked to dance in big tents to their favourite DJs.</p> -> 1. Appealing to the target market
+	=<p>E. By keeping its cool musical reputation, the festival would go from strength to strength. In 2016, half a million fans bought their tickets in under 20 minutes, and each year around 100,000 attendees a day now splash out around $375 on admission. Of course, the costs don't stop there. It is now the most profitable festival in the world.</p> -> 6. A money-making success
+	=<p> F. Just two hours from Los Angeles, Coachella swiftly became the place to see and be seen. The presence of models and other celebrities soon began to attract style bloggers, drawn by the fashion rather than the music. Which, in turn, has made Coachella irresistible to fashion houses, beauty companies and other lifestyle labels.</p> -> 5. A fashionable destination
+	=<p>G. Although for several years luxury brands have been hosting free concerts and pool parties for invited guests and photographing Instagram stars modelling designer clothes, this has until recently been outside festival hours. As a result, they are now effectively separate events, to the point that 'No-chella' as it has become known, is, in the opinion of some, in danger of overshadowing the 'real' festival.</p>\n<p>Coachella has certainly come a long way from the original anti-establishment Pearl Jam gig.</p> -> 3. Choosing between two attractions
+}
+
+
+// question: 25402755  name: U1 p8-9 #9 Vocabulary
+::U1 p8-9 9 Vocabulary::[html]<em>Look at the following words and phrases from the article and at the meaning options. Try to work out the meaning from the context or from the word itself. Then match each one to a definition.</em>{
+	=Spend a lot of money -> Splash out
+	=Show something is definitely true -> Confirming
+	=Find a solution (to a problem) -> Resolved
+	=Go large in numbers -> Flocked
+	=Try to get as much as possible (sometimes unfairly) -> Exploit
+	=Consider facts when making a decision -> Taken into account
+	=Make something seem less important -> Overshadowing
+	=Provide people with what they want -> Cater for
+	=Give the idea for -> Inspired
+	=Good but difficult -> Ambitious
+	=Someone or something famous and important -> Iconic
+	=Impossible to refuse -> Irresistible
+	=Makes a lot of money -> Profitable
+	=Very poor -> Impoverished
+}

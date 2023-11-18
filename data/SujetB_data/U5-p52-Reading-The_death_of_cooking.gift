@@ -1,0 +1,98 @@
+// Gold B2 First
+// U5, p. 52-53
+// Reading
+// "The Death of Cooking"
+// ex. 3, 6, 7
+
+// Do not shuffle questions: respect the order
+
+
+::U5 p52 2 Reading: compr questions::Read the article:
+<INSERT TEXT IMAGE HERE>
+
+
+// ex 3: Comprehension questions
+
+::U5 p52 3.0 Reading compr::For the following questions, choose the answer which you think fits best according to the text.
+
+::U5 p52 3.1 Reading compr::Why did Rob Rhinehart initially create Soylent? {
+  ~He saw it as a way of earning money to support his new company.
+  ~He felt that cooking was taking up too much of his time.
+  ~He wanted to live on a diet of nutritious food.
+  ~=He thought that he would be able to live more cheaply.
+}
+
+::U5 p52 3.2 Reading compr::Following the interest in his blog, Rhinehart {
+  ~couldn't keep up with the demand for Soylent.
+  ~had to choose which of his businesses to close.
+  ~improved the recipe for Soylent.
+  ~=started producing big quantities of Soylent.
+}
+
+::U5 p52 3.3 Reading compr::The writer was surprised by the public reaction to Soylent because {
+  ~liquid food has always been associated with ill health.
+  ~=people were already familiar with the idea of liquid meal replacements.
+  ~there are lots of similar products available.
+  ~astronauts stopped using liquid food a long time ago.
+}
+
+::U5 p52 3.4 Reading compr::What does Rhinehart say about people's eating habits in the future? {
+  ~They will feel less hungry at meal times.
+  ~They will prefer eating liquid food.
+  ~=They will only cook when they feel like it.
+  ~They will appreciate eating out more than people do now.
+}
+
+::U5 p52 3.5 Reading compr::What point is made in the fifth paragraph? {
+  ~=Most of our food has been altered in some way.
+  ~Food production needs to get more efficient.
+  ~People are reluctant to eat food products they consider unnatural.
+  ~Plants which are easy to grow will soon replace more popular vegetables.
+}
+
+::U5 p52 3.6 Reading compr::In the final paragraph, the writer expresses {
+  ~doubt that Soylent is only suitable for one group of people.
+  ~=hope that Soylent may be a solution to a serious problem.
+  ~surprise about the predicted demand for Soylent products.
+  ~disagreement that products like Soylent are a risk to family life.
+}
+
+// ex 6: Vocabulary / Expressions
+
+::U5 p52 6 Reading/Vocab expressions::Match the underlined phrases in the article to their meanings:{
+  =having none of it           -> refuse to accept
+  =do away with                -> remove the need for
+  =hit upon                    -> discover by accident
+  =reached the end of the line -> no longer possible to continue
+  =be confined to              -> be limited to
+  =went viral                  -> spread quickly on the internet
+}
+
+// ex 7: Vocabulary / Collocations
+
+::U5 p52 7.0 Reading/Vocab collocations::Decide whether both or only one of the verbs in italics collocates with the noun. If necessary, check the meaning in a dictionary.
+
+::U5 p52 7.1 Collocations::Their crop of soya beans has ______ in size.{
+  ~%50%doubled
+  ~%50%expanded
+}
+
+::U5 p52 7.2 Collocations::The business ______ rapidly.{
+  ~%50%expanded
+  ~%50%grew
+}
+
+::U5 p52 7.3 Collocations::They ______ a huge family on very little money.{
+  ~%100%raised
+  ~%-100%grew
+}
+
+::U5 p52 7.4 Collocations::No one ______ any objections to the plan.{
+  ~%100%raised
+  ~%-100%introduced
+}
+
+::U5 p52 7.5 Collocations::The company had to ______ production to meet demand for the product.{
+  ~%-100%raise
+  ~%100%increase
+}

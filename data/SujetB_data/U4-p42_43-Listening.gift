@@ -1,0 +1,75 @@
+::U4 p42 1.0::How much do you know about Antarctica?
+
+::U4 p42 1.1 Pre-listening Antartica::Antarctica has the world’s largest {
+~volcano.
+~=desert.
+~mountain range.
+}
+
+::U4 p42 1.2 Pre-listening Antartica::Has Antarctica always been cold? {
+~=No, it used to be tropical.
+~Yes, it’s always been covered in thick ice.
+~Yes, but the ice used to be a lot thinner.
+}
+
+::U4 p42 1.3 Pre-listening Antartica::Which of these animals do you NOT get in Antarctica? {
+~penguins.
+~seals.
+~=polar bears.
+}
+
+::U4 p42 1.4 Pre-listening Antartica::Who led the first team to reach the South Pole in 1911? {
+~=Ronald Amundsen.
+~Robert Falcon Scott.
+~Ernest Shackleton.
+}
+
+::U4 p42 1.5 Pre-listening Antartica::Why is Ernest Shackleton’s 1908 expedition famous? {
+~Everyone except Shackleton survived the trip.
+~The men survived but they didn’t get to the South Pole.
+~=All the men died on the way back from the South Pole.
+}
+
+::U4 p43 3.0::You are going to hear an interview with Leo Stone, who describes his expedition to the South Pole in the steps of the explorer, Shackleton. Listen to the interview and answer the questions.
+
+::U4 p43 3.1::What was unusual about Leo's team?{
+~They were all descendants of Ernest Shackleton.
+~=They all had a personal link with the 1908 trip.
+~They'd all attempted to reach the South Pole before.
+}
+
+::U4 p43 3.2::What does Leo say wasthe hardest thing for the team before the expedition?{
+~organising the finance.
+~=preparing mentally.
+~getting physically fit.
+}
+
+::U4 p43 3.3::What does Leo say was easier for the 21st-century expedition than for Shackleton’s expedition?{
+~=planning their daily route.
+~doing the cooking.
+~carrying their equipment.
+}
+
+::U4 p43 3.4::What problem did both expeditions experience?{
+~running out of food.
+~aserious illness.
+~=bad weather.
+}
+
+::U4 p43 3.5::How did Leo feel when he was crossing the Antarctic plateau?{
+~=He hadn't expected it to be so difficult.
+~He was worried they wouldn't reach the South Pole.
+~He doubted his skills as a leader.
+}
+
+::U4 p43 3.6::The part of the trip Leo enjoyed the most was when they{
+~reached the South Pole.
+~=reached the same point that Shackleton had got to.
+~reached home safely.
+}
+
+::U4 p43 3.7::What does Leo admire about Shackleton?{
+~his determination.
+~his ambition.
+~=his bravery.
+}
