@@ -1,6 +1,8 @@
+const readline = require('readline');
 const prompt = require('prompt-sync')();
-const Menu_prof=require('./Menu_prof.js')
-const Menu_etu=require('./Menu_etu.js')
+const Menu_prof = require('./Menu_prof.js');
+const Menu_etu = require('./Menu_etu.js');
+
 // Base de données interne (simulée)
 const users = [
   { username: 'prof', password: 'profpass', role: 'Professeur' },
@@ -16,16 +18,15 @@ function login(username, password) {
 
 // Demander le nom d'utilisateur et le mot de passe à l'utilisateur
 const usernameInput = prompt('Entrez votre nom d\'utilisateur : ');
-const passwordInput = prompt('Entrez votre mot de passe : ');
+const passwordInput = prompt.hide('Entrez votre mot de passe : '); // Masque le mot de passe lors de la saisie
 
 const loggedInUser = login(usernameInput, passwordInput);
 
 if (loggedInUser) {
   console.log(`Connecté en tant que ${loggedInUser.username}. Rôle : ${loggedInUser.role}`);
-  if(loggedInUser.role==='Professeur'){
+  if (loggedInUser.role === 'Professeur') {
     Menu_prof.Menu_prof();
-  }
-  else{
+  } else {
     Menu_etu.Menu_etu();
   }
 } else {
