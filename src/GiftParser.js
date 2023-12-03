@@ -17,11 +17,12 @@ var GiftParser = function(sTokenize, sParsedSymb) {
 // tokenize : tranform the data input into a list
 // <eol> = CRLF
 GiftParser.prototype.tokenize = function(data) {
-    var separator = /(\$CATEGORY:|\/\/|::[^:]+::)(.*?)(?=\$CATEGORY:|\/\/|::[^:]+::|$)/gs;
+    var separator = /(\$CATEGORY:|\/\/|::(?:[^:]+|[\s\S]+?)::)(.*?)(?=\$CATEGORY:|\/\/|::(?:[^:]+|[\s\S]+?)::|$)/gs;
     data = data.match(separator);
     // data = data.filter((val, idx) => !val.match(separator));
     data = data.filter((val) => val.trim() !== "");
-    console.log(data);
+    console.log("data",data)
+
     return data;
 };
 
@@ -88,7 +89,6 @@ GiftParser.prototype.expect = function(s, input){
 
 // checkComment : Check if the input is a comment
 GiftParser.prototype.checkComment = function(input){
-    console.log(input[0])
 	return (input.length > 0 && input[0].startsWith("//"));
 }
 
@@ -110,21 +110,18 @@ GiftParser.prototype.grammaireGift = function(input){
 	this.currentQuiz = new Quiz();
 	while (input.length > 0) {
         this.currentQuiz.elements.push(this.element(input));
-        console.log(this.currentQuiz.elements);
     }
+    console.log(this.currentQuiz);
 }
 
 // *(WSP)(commentaire/categorie/question) *(WSP)/CRLF
 GiftParser.prototype.element = function(input){
     var element;
     if (this.checkComment(input)) {
-        console.log("c'est un commentaire")
         element = this.commentaire(input);
     } else if (this.checkCategory(input)) {
-        console.log("c'est une categorie")  
         element = this.categorie(input);
     } else if (this.checkQuestion(input)) {
-        console.log("c'est une question")
         element = this.question(input);
     } else {
         this.errMsg("Invalid element", input);
@@ -150,12 +147,11 @@ GiftParser.prototype.categorie = function(input) {
 
 // [titre] [text-formating] texte [reponse] texte
 GiftParser.prototype.question = function(input){
-    parsedQuestion = input[0].match(/::(.*?)::(?:\[(.*?)\])?(.*)/)
+    parsedQuestion = input[0].match(/::(.*?)::(?:\[(.*?)\])?(.*)/s)
     var titre = this.titre(parsedQuestion[1]);
     var textFormatting = this.textFormating(parsedQuestion[2]);
     var question = new Question(titre, textFormatting);
-    var texte = this.reponse(parsedQuestion[3]);
-    question.textesReponses.push(texte);
+    this.reponse(parsedQuestion[3], question);
     this.next(input);
     return question;
 }
@@ -178,115 +174,126 @@ GiftParser.prototype.textFormating = function(input){
 }
 
 // "{" type-reponse "}"
-GiftParser.prototype.reponse = function(input){
-    texteReponses = input.match(/(?:\{([^{}]+)\}|([^{}]+))/g);
-    for (var i = 0; i < texteReponses.length; i++) {
-        if (texteReponses[i].startsWith("{")) {
-            this.typeReponse(texteReponses[i].substring(1, texteReponses[i].length - 1));
-        } else {
-            var texte = this.texte(texteReponses[i]);
+GiftParser.prototype.reponse = function(input,question) {
+    elems = input.split(/(\{[^{}]+\})/s)
+    for (var i = 0; i < elems.length; i++) {
+        if (this.isReponse(elems[i])) {
+            this.typeReponse(elems[i].replace(/[\{\}]/g, ''), question);
+        } else if (elems[i].trim() != ""){
+            question.textesReponses.push(this.texte(elems[i])); 
         }
     }
 }
 
+GiftParser.prototype.isReponse = function(input){
+    return input.startsWith("{");
+}
+
+
 // vrai-faux/matching/numerique/autre
-GiftParser.prototype.typeReponse = function(input){
+GiftParser.prototype.typeReponse = function(input, question){
     if (this.isTrueFalse(input)) {
-        console.log("c'est un vrai faux")
-        this.vraiFaux(input);
+        this.vraiFaux(input, question);
     } else if (this.isMatching(input)) {
-        console.log("c'est un matching")
-        this.matchingPairs(input);
+        this.matchingPairs(input,question);
     } else if (this.isNumerique(input)) {
-        console.log("c'est un numerique")
-        this.numerique(input);
+        this.numerique(input,question);
     } else if (this.isAutre(input)) {
-        console.log("c'est un autre")
-        this.autre(input);
+        this.autre(input,question);
     } else {
         this.errMsg("Invalid typeReponse", input);
     }
 }
 
 GiftParser.prototype.isTrueFalse = function(input){
-    return (input.startsWith("T") || input.startsWith("F") || input.startsWith("TRUE") || input.startsWith("FALSE")) ;
+    return (input.trim().startsWith("T") || input.trim().startsWith("F") || input.trim().startsWith("TRUE") || input.trim().startsWith("FALSE")) ;
 }
 
 GiftParser.prototype.isMatching = function(input){
-    return /(\d+)\*\('=(.*?)'->'(.*?)'\)/.test(input);
+    return /->/.test(input.trim());
 }
 
 GiftParser.prototype.isNumerique = function(input){
-    return input.startsWith("#");
+    return input.trim().startsWith("#");
 }
 
 GiftParser.prototype.isAutre = function(input){
-    return input.startsWith("~ ") || input.startsWith("=");
+    input = input.replace(/[\r\n]+/g, "").trim();
+    return input.startsWith("~") || input.startsWith("=");
 }
 
 // ("T"/"F"/"TRUE"/"FALSE") [feedback] [feedback]
-GiftParser.prototype.vraiFaux = function(input){
-    var elems = input.match(/\(("T"|"F"|"TRUE"|"FALSE")\)\s+(#[^\s]+)/g);
-    var reponse = new ReponseVraiFaux(elems[0]);
-    for (var i = 1; i < elems.length; i++) {
-        reponse.feedbacks.push(this.feedback(elems[i]));
+GiftParser.prototype.vraiFaux = function(input, question) {
+    console.log(input);
+    var elems = input.match(/^(FALSE|TRUE|T|F)(#(?:.+))?$/);
+    console.log(elems);
+    if (elems) {
+        var reponse = new ReponseVraiFaux(elems[1]);
+        if (elems[2]) {
+            reponse.feedbacks.push(this.feedback(elems[2]));
+        }
+        question.textesReponses.push(reponse);
+    } else {
+        console.log("La chaîne d'entrée ne correspond pas au format attendu.");
     }
-    return reponse;
 }
 
 // 3*("=" texte "->" texte)
-GiftParser.prototype.matchingPairs = function(input){
-	for (var i = 0; i < 3; i++) {
-        var texte1 = this.texte(input);
-        this.expect("->", input);
-        var texte2 = this.texte(input);
-        // Process texte1 and texte2 as needed
+GiftParser.prototype.matchingPairs = function(input,question) {
+    var pairs = input.split(/=/);
+    var reponse = new ReponseMatchingPairs();
+    for (var i = 0; i < pairs.length; i++) {
+        if (/(.+?)\s*->\s*(.+)/.test(pairs[i])) {
+            pair = pairs[i].match(/(.+?)\s*->\s*(.+)/);
+            reponse.pairs[pair[1]] = pair[2];
+        }
     }
+    question.textesReponses.push(reponse);
 }
 
 // 1*("~"/"=")[poids] texte [feedback]
-GiftParser.prototype.autre = function(input){
-    console.log(input);
-    var elems = input.match(/^((~|=))(?:%([^%]+))?%([^#]+)?(?:#([^]+))?$/);
-    console.log("rrrrrrrrrrr",elems);
-    var poids = this.poids(elems[1]);
-    var texte = this.texte(elems[2]);
-    var feedback = this.feedback(input);
-    return new ReponseAutre(texte, poids, feedback);
+GiftParser.prototype.autre = function(input,question) {
+    var elems = input.match(/[^~=]+|~|=+/g);
+    let i = 0;
+    while (i+1 < elems.length) {
+        if (elems[i] == "~" || elems[i] == "=") {
+            question.textesReponses.push(new ReponseAutre(elems[i+1], 1, null));
+            i++;
+        } else {
+            i++;
+            continue;
+        }  
+    }
 }
 
 // "#" (reponse-numerique / 2*("="[poids] reponse-numerique [feedback]))
-GiftParser.prototype.numerique = function(input){
-	this.expect("#", input);
-    if (this.check("reponse-numerique", input)) {
-        this.reponseNumerique(input);
-    } else {
-        for (var i = 0; i < 2; i++) {
-            this.expect("=", input);
-            this.poids(input);
-            this.reponseNumerique(input);
-            this.feedback(input);
+GiftParser.prototype.numerique = function(input,question) {
+    // retirer le # en début de chaîne (en utilisant substring)
+    input = input.substring(1);
+    // Séparer la chaîne en fonction des "="
+    var elems = input.split(/=/);
+    console.log(elems);
+    for (var i = 0; i < elems.length; i++) {
+        if (elems[i].trim() != "") {
+            console.log(elems[i]);
+            this.reponseNumerique(elems[i],question);
         }
     }
 }
 
 // nombre[":"nombre/".."nombre]
-GiftParser.prototype.reponseNumerique = function(input){
-	var nombre1 = this.nombre(input);
-    if (this.check(":", input)) {
-        this.expect(":", input);
-        var nombre2 = this.nombre(input);
-    } else if (this.check("..", input)) {
-        this.expect("..", input);
-        var nombre2 = this.nombre(input);
+GiftParser.prototype.reponseNumerique = function(input,question){
+	//Séparer la chaîne en fonction des ":" ou ".."
+    var elems = input.split(/:|\.\./);
+    console.log(elems);
+    if (elems && elems[0].trim() != ""){
+        question.textesReponses.push(new ReponseNumerique(elems[0].trim(), elems[1].trim()));
     }
-	
 }
 
 // "#"texte
 GiftParser.prototype.feedback = function(input){
-	this.expect("#", input);
-    var texte = this.texte(input);
+    return this.texte(input);
 }
 
 // "%" nombre "%"
@@ -317,7 +324,6 @@ GiftParser.prototype.digit = function(input){
 
 // 1*(WSP/VCHAR)
 GiftParser.prototype.texte = function(input){
-    console.log("*****"+input)
     if (matched = input.match(/.+/i)) {
         return matched[0];
     } else {

@@ -25,23 +25,14 @@ var ReponseVraiFaux = function(texte){
     this.feedbacks = [];
 }
 
-var ReponseMatchingPairs = function(cleUne, valeurUne, cleDeux, valeurDeux, cleTrois, valeurTrois){
-    this.cleUne = cleUne;
-    this.valeurUne = valeurUne;
-    this.cleDeux = cleDeux;
-    this.valeurDeux = valeurDeux;
-    this.cleTrois = cleTrois;
-    this.valeurTrois = valeurTrois;
+var ReponseMatchingPairs = function(){
+    this.pairs = {};
 }
 
-var ReponseNumerique = function(reponse, reponseAltUne, poidsReponseAltUne, feedbackAltUne, reponseAltDeux, poidsReponseAltDeux, feedbackAltDeux){
+var ReponseNumerique = function(reponse, reponseAltUne,poids=1){
+    this.poids = poids;
     this.reponse = reponse;
-    this.reponseAltUne = reponseAltUne;
-    this.poidsReponseAltUne = poidsReponseAltUne;
-    this.feedbackAltUne = feedbackAltUne;
-    this.reponseAltDeux = reponseAltDeux;
-    this.poidsReponseAltDeux = poidsReponseAltDeux;
-    this.feedbackAltDeux = feedbackAltDeux;
+    this.reponseAlt = reponseAltUne;
 }
 
 var ReponseAutre = function(texte, poids, feedback){
