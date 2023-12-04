@@ -41,15 +41,107 @@ cli
 	.command('create', 'Create a gift file')
 	.argument('<file>', 'The file to create')
 	.action(({args, options, logger}) => {
-		fs.writeFile(args.file, "", function(err){
-			if(err){
+		if(!args.file.endsWith(".gift")){
+			return logger.warn("The file extension is not .gift".red);
+		}
+		else {
+			fs.writeFile(args.file, "", function(err){
+				if(err){
+					return logger.warn(err);
+				}
+				logger.info("The file %s has been created".green, args.file);
+			});
+		}
+	})
+
+	//setCategory
+	.command('setCategory', 'Set the category of a GIFT file')
+	.argument('<file>', 'The gift file to modify')
+	.argument('<category>', 'The category to set')
+	.action(({args, options, logger}) => {
+		fs.readFile(args.file, 'utf8', function (err,data) {
+			if (err) {
 				return logger.warn(err);
-			}else if(!args.file.endsWith(".gift")){
-				return logger.warn("The file extension is not .gift".red);
 			}
-			logger.info("The file %s has been created".green, args.file);
+	  
+			// Parcourir ligne par ligne et voir si la ligne commence par $CATEGORY:
+			var lines = data.split("\n");
+			var newLines = [];
+			var categoryFound = false;
+			lines.forEach(function(line){
+				if(line.startsWith("$CATEGORY:")){
+					newLines.push("$CATEGORY: "+args.category);
+					categoryFound = true;
+				}else{
+					newLines.push(line);
+				}
+			});
+			if (!categoryFound){
+				newLines.unshift("$CATEGORY: "+args.category);
+			}
+			var newData = newLines.join("\n");
+			fs.writeFile(args.file, newData, function(err){
+				if(err){
+					return logger.warn(err);
+				}
+				logger.info("The category of %s has been set to %s".green, args.file, args.category);
+			});
 		});
 	})
+
+	//addComment
+	.command('addComment', 'Add a comment to a GIFT file')
+	.argument('<file>', 'The gift file to modify')
+	.argument('<comment>', 'The comment to add')
+	.action(({args, options, logger}) => {
+		fs.appendFile(args.file, "\n// "+args.comment, function(err){
+			if(err){
+				return logger.warn(err);
+			}
+			logger.info("The comment has been added to %s".green, args.file);
+		});
+	})
+
+	//searchQuestion
+	.command('searchQuestion', 'Search a question in a GIFT file')
+	.argument('<file>', 'The gift file or repository to search')
+	.argument('<question>', 'The question to search')
+	.action(({args, options, logger}) => {
+		let filesToCheck = [];
+		if (fs.lstatSync(args.file).isDirectory()){
+			fs.readdirSync(args.file).forEach(file => {
+				if(file.endsWith(".gift")){
+					filesToCheck.push(args.file+"/"+file);
+				}
+			});
+		} else {
+			filesToCheck.push(args.file);
+		}
+		let allQuestions = [];
+		let nbFichiersLus = 0;
+		filesToCheck.forEach(function(file){
+			fs.readFile(file, 'utf8', function (err,data) {
+				if (err) {
+					return logger.warn(err);
+				}
+		  
+				analyzer = new GiftParser();
+				analyzer.parse(data);
+				let questionsCorrespondantes = analyzer.currentQuiz.elements.filter(function(element){
+					return element.titre != undefined && element.titre.includes(args.question);
+				});
+				allQuestions = allQuestions.concat(questionsCorrespondantes);
+				nbFichiersLus++;
+				if (nbFichiersLus == filesToCheck.length){
+					logger.info("Questions correspondantes :")
+					allQuestions.forEach(function(question){
+						console.log(allQuestions.indexOf(question)+" : "+question.titre);
+					});
+				}
+			});
+		});
+	})
+
 
 	// *************** TD Commands ***************
 	

@@ -110,7 +110,6 @@ GiftParser.prototype.grammaireGift = function(input){
 	while (input.length > 0) {
         this.currentQuiz.elements.push(this.element(input));
     }
-    console.log(this.currentQuiz);
 }
 
 // *(WSP)(commentaire/categorie/question) *(WSP)/CRLF
