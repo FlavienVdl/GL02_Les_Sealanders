@@ -31,11 +31,27 @@ cli
 				logger.info("The .gift file contains error".red);
 			}
 			
-			logger.debug(analyzer.parsedPOI);
+			logger.debug(analyzer.parsedGIFT);
 
 		});
 			
 	})
+
+	// create
+	.command('create', 'Create a gift file')
+	.argument('<file>', 'The file to create')
+	.action(({args, options, logger}) => {
+		fs.writeFile(args.file, "", function(err){
+			if(err){
+				return logger.warn(err);
+			}else if(!args.file.endsWith(".gift")){
+				return logger.warn("The file extension is not .gift".red);
+			}
+			logger.info("The file %s has been created".green, args.file);
+		});
+	})
+
+	// *************** TD Commands ***************
 	
 	// readme
 	.command('readme', 'Display the README.txt file')

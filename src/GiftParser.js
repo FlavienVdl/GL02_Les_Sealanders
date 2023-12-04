@@ -21,7 +21,6 @@ GiftParser.prototype.tokenize = function(data) {
     data = data.match(separator);
     // data = data.filter((val, idx) => !val.match(separator));
     data = data.filter((val) => val.trim() !== "");
-    console.log("data",data)
 
     return data;
 };
