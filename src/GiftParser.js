@@ -327,7 +327,7 @@ GiftParser.prototype.multipleChoice = function(input,question) {
     // on retire les accolades et le 1:MC: au début de la chaîne
     input = input.substring(6);
     input = input.substring(0, input.length - 1);
-    // séparer la chaine en fonction des =
+    // séparer la chaine en fonction des ~
     var elems = input.split(/~/);
     // si le premier caractère du premier élément est un ~, alors c'est une bonne réponse
     let reponse = new ReponseMultiple();
