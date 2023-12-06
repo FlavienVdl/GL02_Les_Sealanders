@@ -14,26 +14,26 @@ Ce fichier README.md a été généré le 2023-12-06 par Tifenn NOËL.
 * [Contact](#contact)
 
 ## Projet
-Dans le cadre de l'Unité d'Enseignement GL02, dispensée à l'UTT, notre équipe, **Les Sealanders**, se lance dans un projet proposé par le Ministère de l'éducation nationale de la République de Sealand : Un **system gestion et de préparation de tests et examens en ligne.**
+Dans le cadre de l'Unité d'Enseignement GL02, dispensée à l'UTT, notre équipe, **Les Sealanders**, se lance dans un projet proposé par le Ministère de l'éducation nationale de la République de Sealand : Un **system de gestion et de préparation de tests et examens en ligne.**
 
-> Citation
+> Notre objectif est de permettre aux enseignants de compiler un ensemble de _questions_ et de les rassembler dans un _fichier d'examen_ au _format GIFT_. Le dossier résultant sera éventuellement déposé sur le serveur d'examen, bien que cet aspect spécifique soit hors du cadre de ce projet. De plus, notre outil facilitera la génération des _informations d'identification_ et de contact d'un enseignant au _format VCard_ (RFC 6350 et 6868). Notre logiciel offrira également la possibilité de _simuler l'expérience de test_ d'un étudiant, en évitant la présence d'une même question plus d'une fois dans un examen contenant au moins _15 questions_ et _pas plus de 20_ et de générer un _rapport_ de ses réponses.
 
 ## Installation
 
-### Git
+#### Git
 Pour cloner le dépôt : `git clone https://github.com/FlavienVdl/GL02_Les_Sealanders/`  
 Pour accéder au répertoire du projet : `cd GL02_Les_Sealanders`
 
-### Node.js
+#### Node.js
 Cet outil nécessite l'installation de Node.js | Version : **v21.3.0** ou +  
-Pour vérifier votre version, taper la commande : `node -v`  
+Pour vérifier votre version : `node -v`  
 Pous installer Node.js : `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash`  
 Pour mettre à jour Node.js : `nvm install <version>`  
 Documentation Node.js : [Documentation](https://nodejs.org/docs/latest/api/)  
 
 ## Utilisation
 
-### Gift Parser CLI 
+#### Gift Parser CLI 
 Le Gift Parser CLI est une interface en ligne de commande (CLI) développée en Node.js qui facilite la manipulation de fichiers au format GIFT (General Import Format Technology).
 
 Il propose plusieurs **commandes** pour travailler avec des fichiers GIFT :
@@ -48,7 +48,7 @@ Il propose plusieurs **commandes** pour travailler avec des fichiers GIFT :
 
 ## Roadmap
 
-### Spécifications fonctionnelles SPEC
+#### Spécifications fonctionnelles SPEC
 
 - [x] **SPEC1** : Composer un test au format GFIT (MUST)
 - [ ] **SPEC2** : Rechercher et visualiser des questions (MUST)
