@@ -24,11 +24,14 @@ cli
 	  
 			var analyzer = new GiftParser(options.showTokenize, options.showSymbols);
 			analyzer.parse(data);
-			
-			if(analyzer.errorCount === 0){
+			if (analyzer.errorCount > 0){
+				logger.info("The .gift file contains %s error(s)".red);
+			} 
+			else if (!analyzer.currentQuiz.rightAmountOfQuestions()){
+				logger.info("The .gift file doesn't contain the right amount of questions".red);
+			} 
+			else if(analyzer.errorCount === 0 && analyzer.currentQuiz.rightAmountOfQuestions()){
 				logger.info("The .gift file is a valid gift file".green);
-			}else{
-				logger.info("The .gift file contains error".red);
 			}
 			
 			logger.debug(analyzer.parsedGIFT);

@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Comment, Category, Question, Quiz, ReponseVraiFaux, ReponseMatchingPairs, ReponseNumerique, ReponseAutre } = require('./Quiz.js');
+const { Comment, Category, Question, Quiz, ReponseVraiFaux, ReponseMatchingPairs, ReponseNumerique, ReponseAutre, ReponseSimple, ReponseMultiple } = require('./Quiz.js');
 // GiftParser
 
 var GiftParser = function(sTokenize, sParsedSymb) {
@@ -198,6 +198,10 @@ GiftParser.prototype.typeReponse = function(input, question){
         this.numerique(input,question);
     } else if (this.isAutre(input)) {
         this.autre(input,question);
+    } else if (this.isSA(input)){
+        this.simpleAnswer(input,question);
+    } else if (this.isMC(input)){
+        this.multipleChoice(input,question);
     } else {
         this.errMsg("Invalid typeReponse", input);
     }
@@ -218,6 +222,14 @@ GiftParser.prototype.isNumerique = function(input){
 GiftParser.prototype.isAutre = function(input){
     input = input.replace(/[\r\n]+/g, "").trim();
     return input.startsWith("~") || input.startsWith("=");
+}
+
+GiftParser.prototype.isSA = function(input){
+    return input.trim().startsWith("1:SA:");
+}
+
+GiftParser.prototype.isMC = function(input){
+    return input.trim().startsWith("1:MC:");
 }
 
 // ("T"/"F"/"TRUE"/"FALSE") [feedback] [feedback]
@@ -286,6 +298,44 @@ GiftParser.prototype.reponseNumerique = function(input,question){
     console.log(elems);
     if (elems && elems[0].trim() != ""){
         question.textesReponses.push(new ReponseNumerique(elems[0].trim(), elems[1].trim()));
+    }
+}
+
+// "{1:SA:" 1*(WSP/VCHAR) "}"
+GiftParser.prototype.simpleAnswer = function(input,question) {
+    // on retire les accolades et le 1:SA: au début de la chaîne
+    input = input.substring(6);
+    input = input.substring(0, input.length - 1);
+    // séparer la chaine en fonction des =
+    var elems = input.split(/=/);
+    // si le premier caractère du premier élément est un ~, alors c'est une bonne réponse
+    let nextAnswerTrue = elems[0].trim().startsWith("~") || elems.length == 1;
+    let reponse = new ReponseSimple();
+    for (var i = 0; i < elems.length; i++) {
+        if (elems[i].trim() != "") {
+            reponse.addReponse(elems[i].trim(), nextAnswerTrue);
+        }
+        nextAnswerTrue = false;
+        if (i+1 < elems.length) {
+            nextAnswerTrue = elems[i].trim().endsWith("~");
+        }
+    }
+}
+
+// "{1:MC:" 1*(WSP/VCHAR) "}"
+GiftParser.prototype.multipleChoice = function(input,question) {
+    // on retire les accolades et le 1:MC: au début de la chaîne
+    input = input.substring(6);
+    input = input.substring(0, input.length - 1);
+    // séparer la chaine en fonction des =
+    var elems = input.split(/~/);
+    // si le premier caractère du premier élément est un ~, alors c'est une bonne réponse
+    let reponse = new ReponseMultiple();
+    for (var i = 0; i < elems.length; i++) {
+        nextAnswerTrue = elems[i].trim().startsWith("=");
+        if (elems[i].trim() != "") {
+            reponse.addReponse(elems[i].trim(), nextAnswerTrue);
+        }
     }
 }
 
