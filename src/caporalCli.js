@@ -1,13 +1,11 @@
 const fs = require('fs');
 const colors = require('colors');
 const GiftParser = require('./GiftParser.js');
-
+const prompt = require('prompt-sync')();
 const vg = require('vega');
 const vegalite = require('vega-lite');
-
+const readline = require('readline');
 const cli = require("@caporal/core").default;
-
-
 
 cli
 	.version('gift-parser-cli')
@@ -19,25 +17,229 @@ cli
 	.option('-t, --showTokenize', 'log the tokenization results', { validator: cli.BOOLEAN, default: false })
 	.action(({args, options, logger}) => {
 		
-		fs.readFile(args.file, 'utf8', function (err,data) {
-			if (err) {
-				return logger.warn(err);
-			}
-	  
-			var analyzer = new GiftParser(options.showTokenize, options.showSymbols);
-			analyzer.parse(data);
-			
-			if(analyzer.errorCount === 0){
-				logger.info("The .gift file is a valid gift file".green);
-			}else{
-				logger.info("The .gift file contains error".red);
-			}
-			
-			logger.debug(analyzer.parsedPOI);
+		// vérification de l'identité 
+		let connexion=login();
+		if (connexion === "Professeur"){  
 
-		});
-			
+			fs.readFile(args.file, 'utf8', function (err,data) {
+				if (err) {
+					return logger.warn(err);
+				}
+		
+				var analyzer = new GiftParser(options.showTokenize, options.showSymbols);
+				analyzer.parse(data);
+				
+				if(analyzer.errorCount === 0){
+					logger.info("The .gift file is a valid gift file".green);
+				}else{
+					logger.info("The .gift file contains error".red);
+				}
+				
+				logger.debug(analyzer.parsedGIFT);
+
+			});
+		}	
+		else{console.log('**Vous n\'avez pas les droits pour utiliser cette commande**');}
 	})
+
+	// create
+	.command('create', 'Create a gift file')
+	.argument('<file>', 'The file to create')
+	.action(({args, options, logger}) => {
+		
+		// vérification de l'identité 
+		let connexion=login();
+		if (connexion === "Professeur"){  
+
+			if(!args.file.endsWith(".gift")){
+				return logger.warn("The file extension is not .gift".red);
+			}
+			else {
+				fs.writeFile(args.file, "", function(err){
+					if(err){
+						return logger.warn(err);
+					}
+					logger.info("The file %s has been created".green, args.file);
+				});
+			}
+		}
+		else{console.log('**Vous n\'avez pas les droits pour utiliser cette commande**');}
+	})
+
+	//setCategory
+	.command('setCategory', 'Set the category of a GIFT file')
+	.argument('<file>', 'The gift file to modify')
+	.argument('<category>', 'The category to set')
+	.action(({args, options, logger}) => {
+		
+		// vérification de l'identité 
+		let connexion=login();
+		if (connexion === "Professeur"){  
+
+			fs.readFile(args.file, 'utf8', function (err,data) {
+				if (err) {
+					return logger.warn(err);
+				}
+		
+				// Parcourir ligne par ligne et voir si la ligne commence par $CATEGORY:
+				var lines = data.split("\n");
+				var newLines = [];
+				var categoryFound = false;
+				lines.forEach(function(line){
+					if(line.startsWith("$CATEGORY:")){
+						newLines.push("$CATEGORY: "+args.category);
+						categoryFound = true;
+					}else{
+						newLines.push(line);
+					}
+				});
+				if (!categoryFound){
+					newLines.unshift("$CATEGORY: "+args.category);
+				}
+				var newData = newLines.join("\n");
+				fs.writeFile(args.file, newData, function(err){
+					if(err){
+						return logger.warn(err);
+					}
+					logger.info("The category of %s has been set to %s".green, args.file, args.category);
+				});
+			});
+		}
+		else{console.log('**Vous n\'avez pas les droits pour utiliser cette commande**');}
+	})
+
+	//addComment
+	.command('addComment', 'Add a comment to a GIFT file')
+	.argument('<file>', 'The gift file to modify')
+	.argument('<comment>', 'The comment to add')
+	.action(({args, options, logger}) => {
+		
+		// vérification de l'identité 
+		let connexion=login();
+		if (connexion === "Professeur"){  
+
+			fs.appendFile(args.file, "\n// "+args.comment, function(err){
+				if(err){
+					return logger.warn(err);
+				}
+				logger.info("The comment has been added to %s".green, args.file);
+			});
+		}
+		else{console.log('**Vous n\'avez pas les droits pour utiliser cette commande**');}
+	})
+
+	//searchQuestion
+	.command('searchQuestion', 'Search a question in a GIFT file')
+	.argument('<file>', 'The gift file or repository to search')
+	.argument('<question>', 'The question to search')
+	.action(({args, options, logger}) => {
+
+		// vérification de l'identité 
+		let connexion=login();
+		if (connexion === "Professeur"){  
+
+			let filesToCheck = [];
+			if (fs.lstatSync(args.file).isDirectory()){
+				fs.readdirSync(args.file).forEach(file => {
+					if(file.endsWith(".gift")){
+						filesToCheck.push(args.file+"/"+file);
+					}
+				});
+			} else {
+				filesToCheck.push(args.file);
+			}
+			let allQuestions = [];
+			let nbFichiersLus = 0;
+			filesToCheck.forEach(function(file){
+				fs.readFile(file, 'utf8', function (err,data) {
+					if (err) {
+						return logger.warn(err);
+					}
+			
+					analyzer = new GiftParser();
+					analyzer.parse(data);
+					let questionsCorrespondantes = analyzer.currentQuiz.elements.filter(function(element){
+						return element.titre != undefined && element.titre.includes(args.question);
+					});
+					allQuestions = allQuestions.concat(questionsCorrespondantes);
+					nbFichiersLus++;
+					if (nbFichiersLus == filesToCheck.length){
+						logger.info("Questions correspondantes :")
+						allQuestions.forEach(function(question){
+							console.log(allQuestions.indexOf(question)+" : "+question.titre);
+						});
+					}
+				});
+			});
+		}
+		else{console.log('**Vous n\'avez pas les droits pour utiliser cette commande**');}
+	})
+
+	// Permet de créer la Vcard 
+	.command('Vcard', 'Create a Vcard')
+	.action(({args,options,logger})=>{
+
+		let connexion=login();
+		if (connexion === "Professeur"){  
+
+			// Validation pour le nom et prénom (lettres uniquement)
+			const regexNomPrenom = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/;
+	
+			// Validation pour le numéro de téléphone (10 chiffres)
+			const regexTelephone = /^(?:(?:\+|00)33[\s.-]{0,3}(?:\(0\)[\s.-]{0,3})?|0)[1-9](?:(?:[\s.-]?\d{2}){4}|\d{2}(?:[\s.-]?\d{3}){2})$/;
+		
+			// Validation pour l'adresse email
+			const regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+		
+			//affichage infos
+			console.log("**Remplissez la Vcard**\n")
+
+			let nom, prenom, telephone, adresse, matiere, email;
+		
+			do {
+			nom = prompt("Entrez votre nom: ");
+			} while (!regexNomPrenom.test(nom));
+		
+			do {
+			prenom = prompt("Entrez votre prénom: ");
+			} while (!regexNomPrenom.test(prenom));
+		
+			do {
+			telephone = prompt("Entrez votre numéro de téléphone (10 chiffres): ");
+			} while (!regexTelephone.test(telephone));
+
+			do {
+			email = prompt("Entrez votre adresse email: ");
+			} while (!regexEmail.test(email));
+		
+			const vCardData = `BEGIN:VCARD
+			VERSION:4.0
+			FN:${prenom} ${nom}
+			TEL:${telephone}
+			ADR:${adresse}
+			EMAIL:${email}
+			ROLE:${matiere}
+			END:VCARD`;
+		
+			// Génération de la vCard
+			console.log(vCardData);
+		
+			// Enregistrer la vCard dans un fichier
+			const nomFichier = `${nom}_${prenom}_vcard.vcf`; // Nom du fichier
+			fs.writeFile(nomFichier, vCardData, (err) => {
+			if (err) {
+				console.error('Erreur lors de l\'enregistrement du fichier:', err);
+				return;
+			}
+			console.log('La vCard a été enregistrée avec succès dans', nomFichier);
+			});
+		}
+		else{console.log('**Vous n\'avez pas les droits pour utiliser cette commande**');}
+	})
+
+
+
+	// *************** TD Commands ***************
 	
 	// readme
 	.command('readme', 'Display the README.txt file')
@@ -52,64 +254,6 @@ cli
 		
 	})
 	
-
-	//Permet de connecter l'utilisateur 
-	.command('Connexion', 'Display the login menu')
-	.action(({args,options,logger})=>{
-		const readline = require('readline');
-		const prompt = require('prompt-sync')();
-		
-		
-		const users = [
-			{ username: 'prof', password: 'profpass', role: 'Professeur' },
-			{ username: 'admin', password: 'adminpass', role: 'administrateur' },
-			{ username: 'etu', password: 'etupass', role: 'étudiant' }
-		  ];
-		  
-		  // Fonction de connexion
-		  function login(username, password) {
-			const user = users.find(user => user.username === username && user.password === password);
-			return user ? user : null;
-		  }
-		  
-		  // Demander le nom d'utilisateur et le mot de passe à l'utilisateur
-		  const usernameInput = prompt('Entrez votre nom d\'utilisateur : ');
-		  const passwordInput = prompt.hide('Entrez votre mot de passe : '); // Masque le mot de passe lors de la saisie
-		  
-		  const loggedInUser = login(usernameInput, passwordInput);
-		  
-		  if (loggedInUser) {
-			console.log(`Connecté en tant que ${loggedInUser.username}. Rôle : ${loggedInUser.role}`);
-			if (loggedInUser.role === 'Professeur' || loggedInUser.role === 'étudiant') {
-				console.log("Connecté");
-			  Menu(loggedInUser.role);
-			} 
-		  } else {
-			console.log('Identifiants incorrects. Connexion échouée.');
-		  }
-			
-		
-
-
-
-	})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	// search
 	.command('search', 'Free text search on POIs\' name')
 	.argument('<file>', 'The gift file to search')
@@ -285,160 +429,32 @@ cli.run(process.argv.slice(2));
 	
 // Partie fonctions ***************************************************************************************
 
-// fonction afficher le menu professeur
-function Menu(role){
+  // fonction connexion
 
-	const prompt = require('prompt-sync')();
-	
-	
-	// Fonction pour afficher le menu des professeurs
-	function afficherMenu() {
-		console.log("Menu :");
-		console.log("1. Lire un fichier");
-		console.log("2. Créer une Vcard");
-		console.log("3. Option 3");
-		console.log("4. Quitter");
-	}
-
-
-		
-		let choix =0;
-		// Appeler la fonction correspondante en fonction du choix
-		// Menu pour les professeurs
-		if (role === 'Professeur'){
-			while(choix!=4){
-				afficherMenu();
-				// Récupérer le choix de l'utilisateur
-				choix = parseInt(prompt("Choisissez une option (1-4) :"));
-			
-				switch (choix) {
-					case 1:
-						fonctionOption1();
-						break;
-					case 2:
-						genererVCard();
-						break;
-					case 3:
-						fonctionOption3();
-						break;
-					case 4:
-						console.log("Au revoir !");
-						break;
-					default:
-						console.log("Choix invalide. Veuillez choisir une option valide.");
-						afficherMenu(); // Afficher à nouveau le menu en cas de choix invalide
-						break;
-				}
-			}
-		}
-
-		// Menu pour les étudiants 
-		else if (role === 'étudiant'){
-			while(choix!=4){
-				afficherMenu();
-				// Récupérer le choix de l'utilisateur
-				choix = parseInt(prompt("Choisissez une option (1-4) :"));
-			
-				switch (choix) {
-					case 1:
-						fonctionOption1();
-						break;
-					case 2:
-						genererVCard();
-						break;
-					case 3:
-						fonctionOption3();
-						break;
-					case 4:
-						console.log("Au revoir !");
-						break;
-					default:
-						console.log("Choix invalide. Veuillez choisir une option valide.");
-						afficherMenu(); // Afficher à nouveau le menu en cas de choix invalide
-						break;
-				}
-			}
-		
-	}
-	
-	// Fonctions à implémenter ultérieurement
-	function fonctionOption1() {
-		console.log("Fonction de l'option 1 à implémenter ultérieurement.");
-		// Implémenter la logique de l'option 1 ici
-		afficherMenu(); // Retourner au menu principal
-	}
-	
-	function fonctionOption2() {
-		console.log("Fonction de l'option 2 à implémenter ultérieurement.");
-		// Implémenter la logique de l'option 2 ici
-		afficherMenu; // Retourner au menu principal
-	}
-	
-	function fonctionOption3() {
-		console.log("Fonction de l'option 3 à implémenter ultérieurement.");
-		// Implémenter la logique de l'option 3 ici
-		afficherMenu(); // Retourner au menu principal
-	}
-	
-	
-}
-	
-
-// fonction pour générer la vcard
-function genererVCard() {
-    const prompt = require('prompt-sync')();
-    const fs = require('fs');
-   
-  
-    // Validation pour le nom et prénom (lettres uniquement)
-    const regexNomPrenom = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/;
-  
-    // Validation pour le numéro de téléphone (10 chiffres)
-    const regexTelephone = /^(?:(?:\+|00)33[\s.-]{0,3}(?:\(0\)[\s.-]{0,3})?|0)[1-9](?:(?:[\s.-]?\d{2}){4}|\d{2}(?:[\s.-]?\d{3}){2})$/;
-  
-    // Validation pour l'adresse email
-    const regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
-  
-    let nom, prenom, telephone, adresse, matiere, email;
-  
-    do {
-      nom = prompt("Entrez votre nom: ");
-    } while (!regexNomPrenom.test(nom));
-  
-    do {
-      prenom = prompt("Entrez votre prénom: ");
-    } while (!regexNomPrenom.test(prenom));
-  
-    do {
-      telephone = prompt("Entrez votre numéro de téléphone (10 chiffres): ");
-    } while (!regexTelephone.test(telephone));
-  
-    adresse = prompt("Entrez votre adresse: ");
-    matiere = prompt("Entrez la matière enseignée: ");
-  
-    do {
-      email = prompt("Entrez votre adresse email: ");
-    } while (!regexEmail.test(email));
-  
-    const vCardData = `BEGIN:VCARD
-  VERSION:4.0
-  FN:${prenom} ${nom}
-  TEL:${telephone}
-  ADR:${adresse}
-  EMAIL:${email}
-  ROLE:${matiere}
-  END:VCARD`;
-  
-    // Génération de la vCard
-    console.log(vCardData);
-  
-    // Enregistrer la vCard dans un fichier
-    const nomFichier = `${nom}_${prenom}_vcard.vcf`; // Nom du fichier
-    fs.writeFile(nomFichier, vCardData, (err) => {
-      if (err) {
-        console.error('Erreur lors de l\'enregistrement du fichier:', err);
-        return;
-      }
-      console.log('La vCard a été enregistrée avec succès dans', nomFichier);
-    });
+  function login(){
+	const users = [
+		{ username: 'prof', password: 'profpass', role: 'Professeur' },
+		{ username: 'etu', password: 'etupass', role: 'étudiant' }
+	  ];
+	  
+	  // Fonction de connexion
+	  function login(username, password) {
+		const user = users.find(user => user.username === username && user.password === password);
+		return user ? user : null;
+	  }
+	  
+	  // Demander le nom d'utilisateur et le mot de passe à l'utilisateur
+	  const usernameInput = prompt('Entrez votre nom d\'utilisateur : ');
+	  const passwordInput = prompt.hide('Entrez votre mot de passe : '); // Masque le mot de passe lors de la saisie
+	  
+	  const loggedInUser = login(usernameInput, passwordInput);
+	  
+	  if (loggedInUser) {
+		console.log(`\n**Connecté en tant que ${loggedInUser.username}. Rôle : ${loggedInUser.role}**\n`);
+		if (loggedInUser.role === 'Professeur' || loggedInUser.role === 'étudiant') {
+		  return loggedInUser.role
+		} 
+	  } else {
+		console.log('**Mot de passe ou Nom d\'utilisateur invalide**');
+	  }
   }

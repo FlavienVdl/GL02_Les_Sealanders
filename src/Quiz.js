@@ -14,6 +14,8 @@ Category.prototype.addElement = function(element) {
 };
 
 var Question = function(titre, textFormatting){
+
+    this.type = 'question';
     this.titre = titre;
     this.textFormatting = textFormatting;
     //Liste de textes (énoncés) et de réponses, pour garder l'ordre
@@ -41,11 +43,46 @@ var ReponseAutre = function(texte, poids, feedback){
     this.feedback = feedback;
 }
 
+var ReponseSimple = function(bonneRep = null){
+    this.reponses = [];
+    this.bonneReponse = bonneRep;
+}
 
+ReponseSimple.prototype.addReponse = function(reponse, bonneRep = false){
+    this.reponses.push(reponse);
+    if(bonneRep){
+        this.bonneReponse = reponse;
+    }
+}
+
+var ReponseMultiple = function(){
+    this.reponses = [];
+    this.bonnesReponses = [];
+}
+
+ReponseMultiple.prototype.addReponse = function(reponse, bonneRep = false){
+    if (bonneRep){
+        reponse = reponse.substring(1)
+    }
+    this.reponses.push(reponse);
+    if(bonneRep){
+        this.bonnesReponses.push(reponse);
+    }
+}
 
 var Quiz = function() {
     this.elements = [];
 };
+
+Quiz.prototype.rightAmountOfQuestions = function() {
+    let nbQuestion = 0;
+    this.elements.forEach(function(element){
+        if(element.type == 'question'){
+            nbQuestion++;
+        }
+    });
+    return nbQuestion >= 15 && nbQuestion <= 20;
+}
 
 module.exports = {
     Comment: Comment,
@@ -55,5 +92,7 @@ module.exports = {
     ReponseVraiFaux: ReponseVraiFaux,
     ReponseMatchingPairs: ReponseMatchingPairs,
     ReponseNumerique: ReponseNumerique,
-    ReponseAutre: ReponseAutre
+    ReponseAutre: ReponseAutre,
+    ReponseSimple: ReponseSimple,
+    ReponseMultiple: ReponseMultiple
 };
