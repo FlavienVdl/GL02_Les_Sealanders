@@ -327,6 +327,14 @@ cli
 					console.log(analyzer.currentQuiz.dicoProfile());
 				});
 			})
+
+		// SPEC 8 : Comparaison du profil d'un test avec un ou plusieurs fichiers de la banque nationale de questions
+		.command('compare', 'Compare a test profile with one or more files in the national question bank')
+		.argument('<file>', 'a test')
+		.argument('<source>', 'one or more files from the national question bank')
+		.action(({args,options,logger})=>{
+	
+		})	
 	
 	// *************** TD Commands ***************
 	
