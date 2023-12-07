@@ -19,7 +19,7 @@ var GiftParser = function(sTokenize, sParsedSymb) {
 GiftParser.prototype.tokenize = function(data) {
     var separator = /(\$CATEGORY:|\/\/|::(?:[^:]+|[\s\S]+?)::)(.*?)(?=\$CATEGORY:|\/\/|::(?:[^:]+|[\s\S]+?)::|$)/gs;
     data = data.match(separator);
-    // data = data.filter((val, idx) => !val.match(separator));
+    // data = data.filter((val, idx) => !val.match(separator))
     data = data.filter((val) => val.trim() !== "");
 
     return data;
@@ -234,9 +234,7 @@ GiftParser.prototype.isMC = function(input){
 
 // ("T"/"F"/"TRUE"/"FALSE") [feedback] [feedback]
 GiftParser.prototype.vraiFaux = function(input, question) {
-    console.log(input);
-    var elems = input.match(/^(FALSE|TRUE|T|F)(#(?:.+))?$/);
-    console.log(elems);
+    let elems = input.trim().match(/^(FALSE|TRUE|T|F)(#(?:.+))?$/);
     if (elems) {
         var reponse = new ReponseVraiFaux(elems[1]);
         if (elems[2]) {
@@ -282,10 +280,8 @@ GiftParser.prototype.numerique = function(input,question) {
     input = input.substring(1);
     // Séparer la chaîne en fonction des "="
     var elems = input.split(/=/);
-    console.log(elems);
     for (var i = 0; i < elems.length; i++) {
         if (elems[i].trim() != "") {
-            console.log(elems[i]);
             this.reponseNumerique(elems[i],question);
         }
     }
@@ -295,7 +291,6 @@ GiftParser.prototype.numerique = function(input,question) {
 GiftParser.prototype.reponseNumerique = function(input,question){
 	//Séparer la chaîne en fonction des ":" ou ".."
     var elems = input.split(/:|\.\./);
-    console.log(elems);
     if (elems && elems[0].trim() != ""){
         question.textesReponses.push(new ReponseNumerique(elems[0].trim(), elems[1].trim()));
     }
@@ -327,7 +322,7 @@ GiftParser.prototype.multipleChoice = function(input,question) {
     // on retire les accolades et le 1:MC: au début de la chaîne
     input = input.substring(6);
     input = input.substring(0, input.length - 1);
-    // séparer la chaine en fonction des ~
+    // séparer la chaine en fonction des =
     var elems = input.split(/~/);
     // si le premier caractère du premier élément est un ~, alors c'est une bonne réponse
     let reponse = new ReponseMultiple();

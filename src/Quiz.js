@@ -14,6 +14,7 @@ Category.prototype.addElement = function(element) {
 };
 
 var Question = function(titre, textFormatting){
+
     this.type = 'question';
     this.titre = titre;
     this.textFormatting = textFormatting;
