@@ -310,6 +310,24 @@ cli
 		}
 	})
 
+			// profile with chart
+			.command('profileChart', 'Generate the profile of a test or question bank and export it as Vega-lite chart')
+			.alias('pflChart')
+			.argument('<file>', 'The Gift file to use')
+			// example : EM-U4-p32_33-Review.gift
+			.action(({args, options, logger}) => {
+				fs.readFile(args.file, 'utf8', function (err,data) {
+					if (err) {
+						return logger.warn(err);
+					}
+	
+					analyzer = new GiftParser();
+					analyzer.parse(data);
+					analyzer.currentQuiz.dicoProfile();
+					console.log(analyzer.currentQuiz.dicoProfile());
+				});
+			})
+	
 	// *************** TD Commands ***************
 	
 	// readme
