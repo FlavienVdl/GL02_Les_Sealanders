@@ -16,7 +16,7 @@ Ce fichier README.md a été généré le 2023-12-06 par Tifenn NOËL.
 ## Projet
 Dans le cadre de l'Unité d'Enseignement GL02, dispensée à l'UTT, notre équipe, **Les Sealanders**, se lance dans un projet proposé par le Ministère de l'éducation nationale de la République de Sealand : Un **system de gestion et de préparation de tests et examens en ligne.**
 
-> Notre objectif est de permettre aux enseignants de compiler un ensemble de _questions_ et de les rassembler dans un _fichier d'examen_ au _format GIFT_. Le dossier résultant sera éventuellement déposé sur le serveur d'examen, bien que cet aspect spécifique soit hors du cadre de ce projet. De plus, notre outil facilitera la génération des _informations d'identification_ et de contact d'un enseignant au _format VCard_ (RFC 6350 et 6868). Notre logiciel offrira également la possibilité de _simuler l'expérience de test_ d'un étudiant, en évitant la présence d'une même question plus d'une fois dans un examen contenant au moins _15 questions_ et _pas plus de 20_ et de générer un _rapport_ de ses réponses.
+> Notre objectif est de permettre aux enseignants de compiler un ensemble de **questions** et de les rassembler dans un **fichier d'examen_** au **format GIFT**. Le dossier résultant sera éventuellement déposé sur le serveur d'examen, bien que cet aspect spécifique soit hors du cadre de ce projet. De plus, notre outil facilitera la génération des **informations d'identification** et de contact d'un enseignant au **format VCard** (RFC 6350 et 6868). Notre logiciel offrira également la possibilité de **simuler l'expérience de test** d'un étudiant, en évitant la présence d'une même question plus d'une fois dans un examen contenant au moins **15 questions** et **pas plus de 20** et de générer un **rapport** de ses réponses.
 
 ## Installation
 
@@ -40,10 +40,13 @@ Il propose plusieurs **commandes** pour travailler avec des fichiers GIFT :
 * Pour créer un quizz : `node caporalCLI.js create ../data/newQuiz.gift`
 * Pour ajouter une catégorie : `node caporalCLI.js setCategory ../data/newQuiz.gift "categorie"`
 * Pour ajouter un commentaire : `node caporalCLI.js addComment ../data/newQuiz.gift "Commentaire a ajouter"`
-* Pour ajouter une question : `node caporalCLI.js addQuestion dossier-source fichier-dest "titre question a ajouter"`
-* Pour rechercher une question : `node caporalCLI.js searchQuestion ../data/ "chaine à rechercher">` 
-  - Sans la chaine, il affiche les x premières questions (n'affiche que les titres)`
+* Pour ajouter une question : `node caporalCLI.js addQuestion d../data/SujetB_data test.gift "chaine de caractère"`
+* Pour rechercher une question : `node caporalCLI.js searchQuestion ../data/SujetB_data/ "chaine de caractère"` 
 * Pour visualiser une question et ses réponses : `node caporalCLI.js visualise ../data/ "titre exact"`
+* Pour afficher un fichier Vcard : `node caporalCLI.js Vcard`
+    * Connection possible que pour le rôle de professeur
+* Pour comparer le profil d'un test avec un ou plusieurs fichiers de la banque nationale de questions : `node caporalCli.js compare <test> <directory>`
+* Pour afficher le profil d'un test ou d'une banque de questions en générant un histogramme (svg) des types de questions : `node caporalCli.js profileChart ../data/SujetB_data/EM-U4-p32_33-Review.gift`
 
 
 ## Roadmap
@@ -51,12 +54,13 @@ Il propose plusieurs **commandes** pour travailler avec des fichiers GIFT :
 #### Spécifications fonctionnelles SPEC
 
 - [x] **SPEC1** : Composer un test au format GFIT (MUST)
-- [ ] **SPEC2** : Rechercher et visualiser des questions (MUST)
-- [ ] **SPEC3** : Sélectionner une question (MUST)
-- [ ] **SPEC4** : Vérifier la qualité du test (MUST)
+- [x] **SPEC2** : Rechercher et visualiser des questions (MUST)
+- [x] **SPEC3** : Sélectionner une question (MUST)
+- [x] **SPEC4** : Vérifier la qualité du test (MUST)
 - [x] **SPEC5** : Générer des fichiers VCard (SHOULD)
 - [ ] **SPEC6** : Simuler la passation d'un test (COULD)
-- [ ] **SPEC7** : Afficher le profil d'un test GIFT ou d'une banque de questions (SHOULD)
+- [x] **SPEC7** : Afficher le profil d'un test GIFT ou d'une banque de questions (SHOULD)
+- [ ] **MAINTENANCE** : Le code sera maintenu et corriger au besoin. N'hésitez pas à nous contacter [Contact](#contact)
 
 
 ## Contributeurs
