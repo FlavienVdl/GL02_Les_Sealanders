@@ -173,7 +173,8 @@ cli
 		
 		if(analyzer.errorCount === 0){
 			var n = new RegExp(args.needle);
-			var filtered = analyzer.parsedPOI.filter( p => p.name.match(n, 'i'));
+			//var filtered = analyzer.parsedPOI.filter( p => p.name.match(n, 'i'));
+			var filtered = analyzer.parsedGIFT.filter( p => p.name.match(n, 'i'));
 			logger.info("%s", JSON.stringify(filtered, null, 2));
 			
 		}else{
@@ -181,6 +182,42 @@ cli
 		}
 		
 		});
+	})
+
+
+	// visualise
+	.command('visualise', 'Visualiser une question d\'un questionnaire')
+	.argument('<file>', 'Le fichier questionnaire')
+	.argument('<question>', 'Le titre exact de la question à visualiser')
+	.action(({ args, options, logger }) => {
+		console.log("Coucou a marche !");
+	  fs.readFile(args.file, 'utf8', function (err, data) {
+		if (err) {
+			console.log("Coucou a marche !");
+			return logger.warn(err);
+		}
+		console.log("Coucou a marche !");
+		console.log(data);
+  
+		analyzer = new GiftParser();
+		analyzer.parse(data);
+  
+		let questionToVisualize = null; //stocker la question a visualiser
+		for (const element of analyzer.currentQuiz.elements) {
+		  if (element.titre && element.titre === args.question) //verifier si l'element a une propriete 'titre' et si elle correspond à la question specifiee.
+		  {
+			questionToVisualize = element; //assigner l'element a la variable questionToVisualize
+			break;
+		  }
+		}
+  
+		if (questionToVisualize) {
+		  logger.info("Question trouvée :");
+		  logger.info(JSON.stringify(questionToVisualize, null, 2)); //afficher la question avec 2 espaces
+		} else {
+		  logger.info("La question n'a pas été trouvée.");
+		}
+	  });
 	})
 
 	// average
