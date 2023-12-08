@@ -336,62 +336,63 @@ cli
 		.action(({args,options,logger})=>{
 			
 			// Vérification de l'identité
-			let connexion=login();
-			if (connexion === "Professeur"){
+			//let connexion=login();
+			//if (connexion === "Professeur"){
 				
 				// Profil du test 
-				fs.readFile(args.file, 'utf8', function (err,data) {
+				fs.readFile(args.file, 'utf8', function (err,data1) {
 					if (err) {
 						return logger.warn(err);
 					}
-				})
-				analyzer = new GiftParser();
-				analyzer.parse(data);
-				let dicoTest = analyzer.currentQuiz.dicoProfile();
-				
-				// Profil moyen des autres fichiers
-				let filesToCompare = [];
-				if (fs.lstatSync(args.dir).isDirectory()){
-					fs.readdirSync(args.dir).forEach(file => {
-						if(file.endsWith(".gift")){
-							filesToCompare.push(args.dir+"/"+file);
-						}
-					});
-				} else {
-					filesToCompare.push(args.dir);
-				}
-				let dicoAutresFichiers = {}
-				filesToCompare.forEach(function(file){
-					fs.readFile(file, 'utf8', function (err,data) {
-						if (err) {
-							return logger.warn(err);
-						}
-					})
 					analyzer = new GiftParser();
-					analyzer.parse(data);
-					let dicoFile = analyzer.currentQuiz.dicoProfile();
-					let dicoFileKeys = Object.keys(dicoFile);
-					dicoFileKeys.forEach(function(key){
-						if (dicoAutresFichiers[key] === undefined) {
-							dicoAutresFichiers[key] = dicoFile[key];
-						}
-						else {
-							dicoAutresFichiers[key] += dicoFile[key];
-						}
+					analyzer.parse(data1);
+					let dicoTest = analyzer.currentQuiz.dicoProfile();
+				
+					// Profil moyen des autres fichiers
+					let filesToCompare = [];
+					if (fs.lstatSync(args.dir).isDirectory()){
+						fs.readdirSync(args.dir).forEach(file => {
+							if(file.endsWith(".gift")){
+								filesToCompare.push(args.dir+"/"+file);
+							}
+						});
+					} else {
+						filesToCompare.push(args.dir);
+					}
+					let dicoAutresFichiers = {}
+					filesToCompare.forEach(function(file){
+						fs.readFile(file, 'utf8', function (err,data2) {
+							if (err) {
+								return logger.warn(err);
+							}
+							analyzer = new GiftParser();
+							analyzer.parse(data2);
+							let dicoFile = analyzer.currentQuiz.dicoProfile();
+							let dicoFileKeys = Object.keys(dicoFile);
+							dicoFileKeys.forEach(function(key){
+								if (dicoAutresFichiers[key] === undefined) {
+									dicoAutresFichiers[key] = dicoFile[key];
+								}
+								else {
+									dicoAutresFichiers[key] += dicoFile[key];
+								}
+							})
+						})
 					})
-				})
-				let NbFichiers = filesToCompare.length;
-				if (NbFichiers>1) {
-					let dicoAutresFichiersKeys = Object.keys(dicoAutresFichiers);
-					dicoAutresFichiersKeys.forEach(function(key){
-						dicoAutresFichiers[key] = dicoAutresFichiers[key]/NbFichiers;
-					})
-				}
+					let NbFichiers = filesToCompare.length;
+					if (NbFichiers>1) {
+						let dicoAutresFichiersKeys = Object.keys(dicoAutresFichiers);
+						dicoAutresFichiersKeys.forEach(function(key){
+							dicoAutresFichiers[key] = dicoAutresFichiers[key]/NbFichiers;
+						})
+					}
 
-				// Affichage
-				console.log(dicoTest);
-				console.log(dicoAutresFichiers);
-			}	
+					// Affichage
+					console.log(dicoTest);
+					console.log(dicoAutresFichiers);
+
+				})
+			//}	
 		})	
 	
 	// *************** TD Commands ***************
