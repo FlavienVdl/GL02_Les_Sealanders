@@ -60,6 +60,7 @@ Il propose plusieurs **commandes** pour travailler avec des fichiers GIFT :
 - [x] **SPEC5** : Générer des fichiers VCard (SHOULD)
 - [ ] **SPEC6** : Simuler la passation d'un test (COULD)
 - [x] **SPEC7** : Afficher le profil d'un test GIFT ou d'une banque de questions (SHOULD)
+- [x] **SPEC8** : Comparer le profil d'un test avec un ou plusieurs fichiers de la banque nationale de questions (SHOULD)
 - [ ] **MAINTENANCE** : Le code sera maintenu et corriger au besoin. N'hésitez pas à nous contacter [Contact](#contact)
 
 
