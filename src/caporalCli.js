@@ -328,21 +328,18 @@ cli
 				});
 			})
 
-		// SPEC 8 : Comparaison du profil d'un test avec un ou plusieurs fichiers de la banque nationale de questions
+		// **** SPEC 8 : Comparaison du profil d'un test avec un ou plusieurs fichiers de la banque nationale de questions ****
 		.command('compareTestProfiles', "Comparaison du profil d'un test avec un ou plusieurs fichiers de la banque nationale de questions")
 		.argument('<file>', 'un test')
 		.argument('<dir>', 'un ou plusieurs fichiers de la banque nationale de questions')
 		.alias('compare')
 		.action(({args,options,logger})=>{
 			
-			// Vérification de l'identité
-			//let connexion=login();
-			//if (connexion === "Professeur"){}
-			//else {
-			//	console.log('**Vous n\'avez pas les droits pour utiliser cette commande**');
-			//}
+			// ** Vérification de l'identité **
+			let connexion=login();
+			if (connexion === "Professeur") {
 				
-				// Somme des profils des autres fichiers
+				// ** Création d'une liste contenant les fichiers à comparer **
 				let filesToCompare = [];
 				if (fs.lstatSync(args.dir).isDirectory()){
 					fs.readdirSync(args.dir).forEach(file => {
@@ -353,68 +350,69 @@ cli
 				} else {
 					filesToCompare.push(args.dir);
 				}
-				let dicoAutresFichiers = {}
+
+				// ** Création d'un dictionnaire de fréquence des types de questions dans les fichiers à comparer **
+				let dicoFilesToCompare = {}
 				let containsNoQuestions = false;
+				// Parcours des fichiers
 				filesToCompare.forEach(function(file){
-					fs.readFile(file, 'utf8', function (err,data2) {
+					fs.readFile(file, 'utf8', function (err,data) {
 						if (err) {
 							return logger.warn(err);
 						}
 						analyzer = new GiftParser();
-						analyzer.parse(data2);
+						analyzer.parse(data);
 						let dicoFile = analyzer.currentQuiz.dicoProfile();
 						let dicoFileKeys = Object.keys(dicoFile);
+						// vérifier que le fichier contient des questions
 						if (dicoFileKeys.length === 0) {
 							containsNoQuestions = true;
 						}
+						// Parcours des types questions dans le fichier
 						dicoFileKeys.forEach(function(key){
-							if (dicoAutresFichiers[key] === undefined) {
-								dicoAutresFichiers[key] = dicoFile[key];
+							if (dicoFilesToCompare[key] === undefined) {
+								dicoFilesToCompare[key] = dicoFile[key];
 							}
 							else {
-								dicoAutresFichiers[key] += dicoFile[key];
+								dicoFilesToCompare[key] += dicoFile[key];
 							}
 						});
 					});
 				});
 				
-				// Profil du test 
-				fs.readFile(args.file, 'utf8', function (err,data1) {
+				// ** Création d'un dictionnaire de fréquence des types de questions dans le test **
+				fs.readFile(args.file, 'utf8', function (err,data) {
 					if (err) {
 						return logger.warn(err);
 					}
 					analyzer = new GiftParser();
-					analyzer.parse(data1);
+					analyzer.parse(data);
 					let dicoTest = analyzer.currentQuiz.dicoProfile();
 					const dicoTestKeys = Object.keys(dicoTest);
+					// vérifier que le test contient des questions
 					if (dicoTestKeys.length === 0) {
 						containsNoQuestions = true;
 					}
 
-
-					// Si un des fichiers fournis ne contient pas de question(s) => affichage d'un message d'erreur
+					// ** Si un des fichiers ne contient pas de question(s) => affichage d'un message d'erreur **
 					try {
 						if (containsNoQuestions) {
-							throw new Error("Un des fichiers fournis ne contient pas de question(s) !");
+							throw new Error("\n**Attention !!! Un des fichiers ne contient pas de question(s) !**\n");
 						}
 					} catch (erreur) {
 						console.error(erreur.message);
 					}
 				
-					// Moyenne des profils des autres fichiers
+					// ** Création d'un dictionnaire de fréquence MOYENNE des types de questions dans les fichiers à comparer **
 					const nbFichiers = filesToCompare.length;
-					const dicoAutresFichiersKeys = Object.keys(dicoAutresFichiers);
-					dicoAutresFichiersKeys.forEach(function(key){
-						dicoAutresFichiers[key] = Math.round(dicoAutresFichiers[key]/nbFichiers);
+					const dicoFilesToCompareKeys = Object.keys(dicoFilesToCompare);
+					dicoFilesToCompareKeys.forEach(function(key){
+						dicoFilesToCompare[key] = Math.round(dicoFilesToCompare[key]/nbFichiers);
 					});
 
-					// Affichage des dictionnaires
-					console.log(dicoTest);
-					console.log(dicoAutresFichiers);
-
-					// Visualisation avec vega-lite dans un fichier .svg
+					// ** Visualisation avec vega-lite dans un fichier .svg **
 					let formattedData = [];
-					const allKeys = new Set([...dicoTestKeys, ...dicoAutresFichiersKeys]);
+					const allKeys = new Set([...dicoTestKeys, ...dicoFilesToCompareKeys]);
 					allKeys.forEach(function(type) {
 						for (let i = 0; i < 2; i++) {
 							let src = "";
@@ -423,8 +421,8 @@ cli
 								src = "Votre test";
 								value = dicoTest[type] || 0;
 							} else {
-								src = "Moyenne des fichiers de la banque de question";
-								value = dicoAutresFichiers[type] || 0;
+								src = "Autre(s) fichier(s)";
+								value = dicoFilesToCompare[type] || 0;
 							}
 							formattedData.push({
 								questionType: type,
@@ -433,7 +431,6 @@ cli
 							});
 						}
 					});
-					console.log(formattedData);
 					const spec = {
 						"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
 						"width": 150,
@@ -443,7 +440,7 @@ cli
 						},
 						"mark": "bar",
 						"title": {
-							"text": "Comparaison du profil de votre test avec les fichiers de la banque nationale de questions",
+							"text": "Comparaison du profil de votre test avec le profil moyen des fichiers de la banque nationale de questions",
 							"fontSize": 18
 						},
 						"encoding": {
@@ -482,6 +479,14 @@ cli
 						view.finalize();
 					});
 				});
+
+				// ** Indication de l'emplacement du fichier .svg **
+				console.log("\n**Comparaison terminée ! Retrouvez le résultat dans le fichier ./result.svg**\n");
+			}
+			else {
+				// Message si l'identification a échouée
+				console.log('**Vous n\'avez pas les droits pour utiliser cette commande**');
+			}
 		})	
 	
 	// *************** TD Commands ***************
