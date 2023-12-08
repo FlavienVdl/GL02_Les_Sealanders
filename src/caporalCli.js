@@ -329,11 +329,69 @@ cli
 			})
 
 		// SPEC 8 : Comparaison du profil d'un test avec un ou plusieurs fichiers de la banque nationale de questions
-		.command('compare', 'Compare a test profile with one or more files in the national question bank')
-		.argument('<file>', 'a test')
-		.argument('<source>', 'one or more files from the national question bank')
+		.command('compareTestProfiles', "Comparaison du profil d'un test avec un ou plusieurs fichiers de la banque nationale de questions")
+		.argument('<file>', 'un test')
+		.argument('<dir>', 'un ou plusieurs fichiers de la banque nationale de questions')
+		.alias('compare')
 		.action(({args,options,logger})=>{
-	
+			
+			// Vérification de l'identité
+			let connexion=login();
+			if (connexion === "Professeur"){
+				
+				// Profil du test 
+				fs.readFile(args.file, 'utf8', function (err,data) {
+					if (err) {
+						return logger.warn(err);
+					}
+				})
+				analyzer = new GiftParser();
+				analyzer.parse(data);
+				let dicoTest = analyzer.currentQuiz.dicoProfile();
+				
+				// Profil moyen des autres fichiers
+				let filesToCompare = [];
+				if (fs.lstatSync(args.dir).isDirectory()){
+					fs.readdirSync(args.dir).forEach(file => {
+						if(file.endsWith(".gift")){
+							filesToCompare.push(args.dir+"/"+file);
+						}
+					});
+				} else {
+					filesToCompare.push(args.dir);
+				}
+				let dicoAutresFichiers = {}
+				filesToCompare.forEach(function(file){
+					fs.readFile(file, 'utf8', function (err,data) {
+						if (err) {
+							return logger.warn(err);
+						}
+					})
+					analyzer = new GiftParser();
+					analyzer.parse(data);
+					let dicoFile = analyzer.currentQuiz.dicoProfile();
+					let dicoFileKeys = Object.keys(dicoFile);
+					dicoFileKeys.forEach(function(key){
+						if (dicoAutresFichiers[key] === undefined) {
+							dicoAutresFichiers[key] = dicoFile[key];
+						}
+						else {
+							dicoAutresFichiers[key] += dicoFile[key];
+						}
+					})
+				})
+				let NbFichiers = filesToCompare.length;
+				if (NbFichiers>1) {
+					let dicoAutresFichiersKeys = Object.keys(dicoAutresFichiers);
+					dicoAutresFichiersKeys.forEach(function(key){
+						dicoAutresFichiers[key] = dicoAutresFichiers[key]/NbFichiers;
+					})
+				}
+
+				// Affichage
+				console.log(dicoTest);
+				console.log(dicoAutresFichiers);
+			}	
 		})	
 	
 	// *************** TD Commands ***************
