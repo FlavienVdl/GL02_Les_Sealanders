@@ -337,7 +337,42 @@ cli
 			
 			// Vérification de l'identité
 			//let connexion=login();
-			//if (connexion === "Professeur"){
+			//if (connexion === "Professeur"){}
+			//else {
+			//	console.log('**Vous n\'avez pas les droits pour utiliser cette commande**');
+			//}
+				
+				// Somme des profils des autres fichiers
+				let filesToCompare = [];
+				if (fs.lstatSync(args.dir).isDirectory()){
+					fs.readdirSync(args.dir).forEach(file => {
+						if(file.endsWith(".gift")){
+							filesToCompare.push(args.dir+"/"+file);
+						}
+					});
+				} else {
+					filesToCompare.push(args.dir);
+				}
+				let dicoAutresFichiers = {}
+				filesToCompare.forEach(function(file){
+					fs.readFile(file, 'utf8', function (err,data2) {
+						if (err) {
+							return logger.warn(err);
+						}
+						analyzer = new GiftParser();
+						analyzer.parse(data2);
+						let dicoFile = analyzer.currentQuiz.dicoProfile();
+						let dicoFileKeys = Object.keys(dicoFile);
+						dicoFileKeys.forEach(function(key){
+							if (dicoAutresFichiers[key] === undefined) {
+								dicoAutresFichiers[key] = dicoFile[key];
+							}
+							else {
+								dicoAutresFichiers[key] += dicoFile[key];
+							}
+						});
+					});
+				});
 				
 				// Profil du test 
 				fs.readFile(args.file, 'utf8', function (err,data1) {
@@ -348,51 +383,87 @@ cli
 					analyzer.parse(data1);
 					let dicoTest = analyzer.currentQuiz.dicoProfile();
 				
-					// Profil moyen des autres fichiers
-					let filesToCompare = [];
-					if (fs.lstatSync(args.dir).isDirectory()){
-						fs.readdirSync(args.dir).forEach(file => {
-							if(file.endsWith(".gift")){
-								filesToCompare.push(args.dir+"/"+file);
-							}
-						});
-					} else {
-						filesToCompare.push(args.dir);
-					}
-					let dicoAutresFichiers = {}
-					filesToCompare.forEach(function(file){
-						fs.readFile(file, 'utf8', function (err,data2) {
-							if (err) {
-								return logger.warn(err);
-							}
-							analyzer = new GiftParser();
-							analyzer.parse(data2);
-							let dicoFile = analyzer.currentQuiz.dicoProfile();
-							let dicoFileKeys = Object.keys(dicoFile);
-							dicoFileKeys.forEach(function(key){
-								if (dicoAutresFichiers[key] === undefined) {
-									dicoAutresFichiers[key] = dicoFile[key];
-								}
-								else {
-									dicoAutresFichiers[key] += dicoFile[key];
-								}
-							})
-						})
-					})
-					let NbFichiers = filesToCompare.length;
-					if (NbFichiers>1) {
-						let dicoAutresFichiersKeys = Object.keys(dicoAutresFichiers);
-						dicoAutresFichiersKeys.forEach(function(key){
-							dicoAutresFichiers[key] = dicoAutresFichiers[key]/NbFichiers;
-						})
-					}
+					// Moyenne des profils des autres fichiers
+					const nbFichiers = filesToCompare.length;
+					const dicoAutresFichiersKeys = Object.keys(dicoAutresFichiers);
+					dicoAutresFichiersKeys.forEach(function(key){
+						dicoAutresFichiers[key] = Math.round(dicoAutresFichiers[key]/nbFichiers);
+					});
 
-					// Affichage
+					// Affichage des dictionnaires
 					console.log(dicoTest);
 					console.log(dicoAutresFichiers);
 
-				})
-			//}	
+					// Visualisation avec vega-lite dans un fichier .svg
+					let formattedData = [];
+					const allKeys = new Set([...Object.keys(dicoTest), ...dicoAutresFichiersKeys]);
+					allKeys.forEach(function(type) {
+						for (let i = 0; i < 2; i++) {
+							let src = "";
+							let value = 0;
+							if (i===0) {
+								src = "Votre test";
+								value = dicoTest[type] || 0;
+							} else {
+								src = "Moyenne des fichiers de la banque de question";
+								value = dicoAutresFichiers[type] || 0;
+							}
+							formattedData.push({
+								questionType: type,
+								source: src,
+								count: value
+							});
+						}
+					});
+					console.log(formattedData);
+					const spec = {
+						"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+						"width": 150,
+						"height": 200,
+						"data": {
+							"values": formattedData
+						},
+						"mark": "bar",
+						"title": {
+							"text": "Comparaison du profil de votre test avec les fichiers de la banque nationale de questions",
+							"fontSize": 18
+						},
+						"encoding": {
+							"column": {
+								"field": "questionType", "type": "ordinal",
+								"axis":{"title": "Type de question"}
+							},
+							"y": {
+								"field": "count", "type": "quantitative",
+								"axis":{"title": "Nombre de question"}
+							},
+							"x": {
+								"field": "source", "type": "nominal",
+								"scale": {"rangeStep": 12},
+								"axis": {"title": "", "labels": false}
+							},
+							"color": {
+								"field": "source", "type": "nominal",
+								"scale": {"range": ["#EA98D2", "#659CCA"]},
+								"legend": {"title": "Source"}
+							}
+						},
+						"config": {
+							"legend": {
+								"labelLimit": 0,
+								"titleLimit": 0 
+							}
+						}
+					};
+					const vegaSpec = vegalite.compile(spec).spec;
+					const runtime = vg.parse(vegaSpec);
+					const view = new vg.View(runtime).renderer('svg').run();
+					const mySvg = view.toSVG();
+					mySvg.then(function (res) {
+						fs.writeFileSync("./result.svg", res);
+						view.finalize();
+					});
+				});
 		})	
 	
 	// *************** TD Commands ***************
