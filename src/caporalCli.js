@@ -354,6 +354,7 @@ cli
 					filesToCompare.push(args.dir);
 				}
 				let dicoAutresFichiers = {}
+				let containsNoQuestions = false;
 				filesToCompare.forEach(function(file){
 					fs.readFile(file, 'utf8', function (err,data2) {
 						if (err) {
@@ -363,6 +364,9 @@ cli
 						analyzer.parse(data2);
 						let dicoFile = analyzer.currentQuiz.dicoProfile();
 						let dicoFileKeys = Object.keys(dicoFile);
+						if (dicoFileKeys.length === 0) {
+							containsNoQuestions = true;
+						}
 						dicoFileKeys.forEach(function(key){
 							if (dicoAutresFichiers[key] === undefined) {
 								dicoAutresFichiers[key] = dicoFile[key];
@@ -382,6 +386,20 @@ cli
 					analyzer = new GiftParser();
 					analyzer.parse(data1);
 					let dicoTest = analyzer.currentQuiz.dicoProfile();
+					const dicoTestKeys = Object.keys(dicoTest);
+					if (dicoTestKeys.length === 0) {
+						containsNoQuestions = true;
+					}
+
+
+					// Si un des fichiers fournis ne contient pas de question(s) => affichage d'un message d'erreur
+					try {
+						if (containsNoQuestions) {
+							throw new Error("Un des fichiers fournis ne contient pas de question(s) !");
+						}
+					} catch (erreur) {
+						console.error(erreur.message);
+					}
 				
 					// Moyenne des profils des autres fichiers
 					const nbFichiers = filesToCompare.length;
@@ -396,7 +414,7 @@ cli
 
 					// Visualisation avec vega-lite dans un fichier .svg
 					let formattedData = [];
-					const allKeys = new Set([...Object.keys(dicoTest), ...dicoAutresFichiersKeys]);
+					const allKeys = new Set([...dicoTestKeys, ...dicoAutresFichiersKeys]);
 					allKeys.forEach(function(type) {
 						for (let i = 0; i < 2; i++) {
 							let src = "";
