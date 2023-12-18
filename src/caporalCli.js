@@ -22,6 +22,12 @@ cli
 		let connexion = login();
 		if (connexion === "Professeur") {
 
+			// On vérifie que le fichier existe
+			if (!fs.existsSync(args.file)) {
+				return logger.warn("Le fichier %s n'existe pas !".red, args.file);
+			}
+
+
 			fs.readFile(args.file, 'utf8', function (err, data) {
 				if (err) {
 					return logger.warn(err);
@@ -604,7 +610,7 @@ function login() {
 		const diff = now - timestamp;
 		const minutesLeft = Math.round((600000 - diff) / 1000 / 60);
 		if (diff < 600000 && tokenJSON.token != null) {
-			console.log("Votre token \"" + tokenJSON.token + "\" a été théoriquement vérifié dans la BDD et est encore valide pendant " + minutesLeft + " minutes !");
+			console.log(("\nVotre token \"" + tokenJSON.token + "\" a été théoriquement vérifié dans la BDD et est encore valide pendant " + minutesLeft + " minutes !\n").green);
 			return tokenJSON.role;
 		}
 	}
