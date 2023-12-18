@@ -2,7 +2,7 @@
   "name": "gift-parser-cli",
   "version": "1.0.0",
   "description": "Offer an interface for a recursive descent parser implemented in Javascript for reading and processing the Verbose POI Format (VPF). This format allows to describe any list of Point of Interest (POI) with an associated list of evaluation. The files are in text format and should respect the following grammar.",
-  "main": "caporalCli.js",
+  "main": "src/caporalCli.js",
   "scripts": {
     "test": "jasmine"
   },
