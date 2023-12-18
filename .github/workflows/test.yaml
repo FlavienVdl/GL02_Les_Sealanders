@@ -1,0 +1,21 @@
+name: test jasmine
+on: [ push, pull_request ]
+
+jobs:
+  jasmine:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 20 ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test with jasmine
+        run: npm test

@@ -2,8 +2,8 @@ describe("Program Syntactic testing of GiftParser", function(){
 	
 	beforeAll(function() {
 
-		const Quiz = require('../Quiz');
-		const GiftParser = require('../GiftParser');
+		const Quiz = require('../src/Quiz');
+		const GiftParser = require('../src/GiftParser');
 		this.analyzer = new GiftParser();
 		
 
