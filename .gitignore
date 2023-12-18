@@ -1,0 +1,9 @@
+# Images created
+*.svg
+
+# Dependency directory
+node_modules/
+
+# IDE settings
+.idea/
+.vscode/
