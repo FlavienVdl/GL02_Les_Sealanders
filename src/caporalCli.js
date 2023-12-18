@@ -342,7 +342,10 @@ cli
 
 				if (questionToVisualize) {
 					logger.info("Question trouvée :");
-					logger.info(JSON.stringify(questionToVisualize, null, 2)); //afficher la question avec 2 espaces
+					//logger.info(JSON.stringify(questionToVisualize, null, 2)); //afficher la question avec 2 espaces
+					logger.info("Titre : " + questionToVisualize.titre);
+					logger.info("Type : " + questionToVisualize.type);
+					logger.info("Réponse : " + questionToVisualize.textesReponses);
 				} else {
 					logger.info("La question n'a pas été trouvée.");
 				}
