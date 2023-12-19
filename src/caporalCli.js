@@ -16,6 +16,7 @@ const vcard = require('./fonctions/VCard.js');
 const addQuestion = require('./fonctions/addQuestion.js');
 const visualise = require('./fonctions/visualise.js');
 const profileChart = require('./fonctions/profileChart.js');
+const compareTestProfiles = require('./fonctions/compareTestProfiles.js');
 
 cli
 	.version('gift-parser-cli')
@@ -165,8 +166,7 @@ cli
 		// ** Vérification de l'identité **
 		let connexion=login();
 		if (connexion === "Professeur") {
-			
-			
+			compareTestProfiles(args, logger);
 		}
 		else {
 			// Message si l'identification a échouée
