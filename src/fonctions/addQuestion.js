@@ -51,7 +51,9 @@ let addQuestion = (args, logger) => {
 							if (analyzer.currentQuiz.getNumberOfQuestions()>=20){
 								logger.info("Le fichier contient déjà 20 questions, la question ne sera pas ajoutée".red);
 								return;
-							}
+							} else if (fs.readFileSync(args.file, 'utf8').includes(questionAAjouter.toGift())){
+                                logger.info("La question est déjà présente dans le fichier, la question ne sera pas ajoutée".red);
+                            }
 							else {
 								fs.appendFile(args.file, "\n\n"+questionAAjouter.toGift(), function(err){
 									if(err){
